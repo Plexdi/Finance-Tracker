@@ -1,13 +1,12 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.format.DateTimeFormatter;
-import java.sql.Statement;
 
 public class App {
 public static void main(String[] args) {
@@ -26,7 +25,6 @@ public static void main(String[] args) {
     String url = "jdbc:postgresql://localhost:5432/postgres";
     String user = "postgres";
     String password = "Thanh2007@Plexdi";
-
 
     try {
         conn = DriverManager.getConnection(url, user, password);
@@ -50,7 +48,7 @@ public static void main(String[] args) {
         int userOption = myObj.nextInt();
         myObj.nextLine();
 
-        if ( userOption == 1 ){
+        if (userOption == 1){
             System.out.print("Enter subscription name: ");
             String Subname = myObj.nextLine();
 
@@ -86,8 +84,18 @@ public static void main(String[] args) {
             AddSubscriptions(Subname, monthlyCost, date, renews, conn);
 
         } else if ( userOption == 2 ){ 
-            System.out.println("What subscription would you like to delete");
-
+            while (true) {
+                System.out.println("Enter your subscription name: ");
+                String subscriptionName = myObj.nextLine();
+                boolean sub = checkSubscriptions(subscriptionName, conn);
+                if ( sub == true ) {
+                    removeSubscriptions(subscriptionName, conn);
+                    break;
+                } else {
+                    System.err.println("subscription does not exists");
+                    continue;
+                }
+            }
         } else if ( userOption == 3 ){ 
             System.out.println("You chose number three ");
         } else if ( userOption == 4 ){ 
@@ -115,21 +123,35 @@ static void AddSubscriptions( String Subnames, float monthlyCost, LocalDate date
         System.out.println(e.getMessage());
     }
 }
-static void removeSubscriptions( String Subnames, Connection conn) {
-    String sql = "DELETE FROM subscriptions WHERE service_name = ?";
+static boolean checkSubscriptions(String subname, Connection conn) {
+    String sql = "SELECT 1 FROM subscriptions WHERE service_name = ?";
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        pstmt.setString(1, Subnames);
+        pstmt.setString(1, subname);
+        try (ResultSet rs = pstmt.executeQuery()) {
+            return rs.next();
+        }
+    } catch (SQLException e) {
+        System.out.println("SQL error: " + e.getMessage());
+    }
+   return false;
+}
 
-        int rowDeleted = pstmt.executeUpdate();
-        if (rowDeleted > 0){
-            System.out.println("Subscription deleted successfully");
-        } else {
-            System.out.println("No rows was deleted");
+static void removeSubscriptions( String Subnames, Connection conn) {
+        String sql = "DELETE FROM subscriptions WHERE service_name = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, Subnames);
+    
+            int rowDeleted = pstmt.executeUpdate();
+            if (rowDeleted > 0){
+                System.out.println("Subscription deleted successfully");
+            } else {
+                System.out.println("No rows was deleted");
+            }
+    
+    
+        } catch ( SQLException e ) {
+            System.err.println(e);
         }
 
-
-    } catch ( SQLException e ) {
-        System.err.println(e);
     }
-}
 }
