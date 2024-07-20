@@ -35,7 +35,6 @@ public static void main(String[] args) {
         return;
     }
 
-
     while ( true ){
         int index = 1;
         String[] options = {"Add Subscription", "Remove Subscription", "Edit Subscription" };
@@ -80,9 +79,7 @@ public static void main(String[] args) {
             } else {
                 renews = false;
             }
-
             AddSubscriptions(Subname, monthlyCost, date, renews, conn);
-
         } else if ( userOption == 2 ){ 
             while (true) {
                 System.out.println("Enter your subscription name: ");
@@ -118,11 +115,11 @@ static void AddSubscriptions( String Subnames, float monthlyCost, LocalDate date
         } else {
             System.err.println("No rows were inserted.");
         }
-        
     } catch ( SQLException e ) {
         System.out.println(e.getMessage());
     }
 }
+
 static boolean checkSubscriptions(String subname, Connection conn) {
     String sql = "SELECT 1 FROM subscriptions WHERE service_name = ?";
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -147,11 +144,8 @@ static void removeSubscriptions( String Subnames, Connection conn) {
             } else {
                 System.out.println("No rows was deleted");
             }
-    
-    
         } catch ( SQLException e ) {
             System.err.println(e);
         }
-
     }
 }
