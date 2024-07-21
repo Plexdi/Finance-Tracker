@@ -10,6 +10,7 @@ import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Map;
+import io.github.cdimascio.dotenv.Dotenv;
 
 
 public class App {
@@ -20,7 +21,6 @@ public class App {
         String[] optionTwo = {"Subscription name", "Monthly Cost", "Auto Renew"};
 
         try {
-            // Explicitly load the PostgreSQL JDBC driver
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
             System.out.println("PostgreSQL JDBC driver not found.");
@@ -30,7 +30,7 @@ public class App {
 
         String url = "jdbc:postgresql://localhost:5432/postgres";
         String user = "postgres";
-        String password = "Thanh2007@Plexdi";
+        String password = "passwordUnknown";
 
         try {
             conn = DriverManager.getConnection(url, user, password);
